@@ -14,7 +14,7 @@
       </script>
    </head>
 
-   <body>
+ <body style="background-color: salmon" id="page-top">
    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
   <a class="navbar-brand" style="color:antiquewhite" href="#" class="text-center"> Selamat datang di Pusat Informasi Korona Virus</a>
   
