@@ -52,9 +52,9 @@ if(isset($_POST['logout'])){
             <td><?php echo $row->meninggal;?></td>
             <td><?php echo $row->published_on;?></td>
             <td>
-               <a href=view.php?id=<?php echo $row->no;?> class="label label-success" >View</a>
-               <a href=edit.php?id=<?php echo $row->no;?> class="label label-success">Edit</a>
-               <a href=delete.php?id=<?php echo $row->no;?> class="label label-danger">Delete</a>
+               <a href=view.php?id=<?php echo $row->no;?> class="btn btn-success" >View</a>
+               <a href=edit.php?id=<?php echo $row->no;?> class="btn btn-success">Edit</a>
+               <a href=delete.php?id=<?php echo $row->no;?> class="btn btn-danger">Delete</a>
             </td>
           </tr>
             <?php
