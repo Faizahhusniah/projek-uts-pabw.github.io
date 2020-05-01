@@ -1,37 +1,40 @@
-<?php include("config/db.php");?>
+<?php include("config/db.php");
 
-<?php
-if(isset($_POST["login"])) 
-{
-   $username= $_POST['username'];
-   $password = $_POST['password'];
-   if(empty($_POST["username"]) || empty($_POST["password"]))
-   {
-      $message = 'semua data harus terisi';
+session_start();
 
-   } else {
-      $query = "SELECT * FROM login WHERE username = '$username'";
-      $stmt = $pdo->prepare($query);
-      $stmt->execute(
-         array(
-            'username' => $_POST["username"],
-            'password' => $_POST["password"]
-         )
-         );
+$msg = "";
 
-         $count = $stmt->rowCount();
-         if($count > 0)
-         {
-            $_SESSION["username"] = $_POST["username"];
-            header("location:index.php");
-         }
-         else {
-            $message = 'Data yang anda masukkan salah';
-         }
-        
-   }
+if (isset($_POST['login'])) {
+  $username = $_POST['username'];
+  $password = $_POST['password'];
+  $email = $_POST['email'];
+
+  if (empty($email) || empty($password)) {
+    $msg = "<label>Masukkan tidak boleh kosong</label>";
+  } else {
+    $query = "SELECT * FROM login WHERE email = '$email'";
+    $data = $pdo->prepare($query);
+    $data->execute();
+
+    $ketemu = $data->rowCount();
+
+    if ($ketemu > 0) {
+      $username = $data->fetch();
+
+      $hash = md5($password);
+      if ($hash == $username['password']) {
+        $username = $username['username'];
+        $_SESSION['login'] = $username['id'];
+        header("Location:index.php");
+        exit;
+      } else {
+        $msg = "<label>Username atau Password salah</label>";
+      }
+    } else {
+      $msg = "<label>Username atau Password salah</label>";
+    }
+  }
 }
-
 
 if(isset($_POST['daftar'])){
    header("location:register.php");
@@ -56,11 +59,17 @@ if(isset($_POST['daftar'])){
   </head>
   <body>
      <br />
-     <?php 
-     if(isset($message)){
-        echo '<label class="text-danger">data yang anda masukkan salah/tidak lengkap</label>';
-     }
-     ?>
+     <?php
+
+if ($msg != "") {
+  echo '<label class="text-danger">' . $msg . '</label>';
+}
+
+if (isset($_GET['msg'])) {
+  echo '<label class="text-success">' . $_GET['msg'] . '</label>';
+}
+
+?>
     <div class="container">
     <h4 class="text-center"> Form login</h4>
     <hr>

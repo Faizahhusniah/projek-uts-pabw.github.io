@@ -1,42 +1,66 @@
-<?php include("config/db.php");?>
-<?php
-$msg="";
+<?php include("config/db.php");
 
-if(isset($_POST['submit'])){
+if(isset($_POST['submit'])) {
+
+$nama = $_POST['username'];
+$email = $_POST['email'];
+$password = $_POST['password'];
+$cpassword = $_POST['cpassword'];
+
+$error = null;
+
+//cek ketersediaan email
+$query = "SELECT email FROM login WHERE email = '$email'";
+$data = $pdo->prepare($query);
+$data->execute();
+
+while ($username = $data->fetch()) {
+  if ($username['email'] == $email) { ?>
+    <div class="alert alert-danger text-center" role="alert">
+      Username sudah ada
+    </div>
+  <?php $error = true;
+  }
+}
+
+//cek password sudah terisi
+if ($password == "") { ?>
+  <div class="alert alert-danger text-center" role="alert">
+    password harus diisi
+  </div>
+<?php $error = true;
+}
+
+
+//cek konfirmasi
+if ($password != $cpassword) : ?>
+  <div class="alert alert-danger text-center" role="alert">
+    Password tidak sama
+  </div>
+<?php $error = true;
+endif;
+
+//enkripsi password
+$password = md5($password);
+
+if (!$error) {
+  //masukkan ke database
+  $query = "INSERT INTO login VALUES ('','$nama','$email','$password')";
+  $data = $pdo->prepare($query);
+  $data->execute();
+
   
-   $username= $_POST['username'];
-   $email = $_POST['email'];
-   $password = password_hash($password, PASSWORD_DEFAULT);
-   $cpassword = $_POST['cpassword'];
-
-   if($username != "" && $email != "" && $password !="" && $cpassword != ""){
-      $sql = "INSERT INTO login(username, email, password) VALUES('$username','$email','$password')";
-     
-       $stmt = $pdo->prepare($sql);
-       if($stmt ->execute()){
-             header("location:login.php");
-       } else {
-             echo "Maaf, gagal menambahkan data";
-       }
-    } else {
-          $error  = "Mohon isi semua data!";
-    }
- 
- }
-
-   
-       
- 
-
- if(isset($_POST['sudah'])){
-   header("location:login.php");
- }
-
-   
-
-
 ?>
+  <div class="alert alert-success text-center" role="alert">
+    Data berhasil ditambahkan
+  </div>
+<?php }
+}
 
+if(isset($_POST['sudah'])) {
+   header("location:login.php");
+}
+?>
 <html>
    <head>
       <title>PHP Password hashing-ragister</title>
@@ -50,9 +74,7 @@ if(isset($_POST['submit'])){
          <div class="col-md-6 col-md-offset-3" align="center">
            
          <img src="assets/header1.jpg"> <br><br>
-         <?php if  ($msg != "") echo $msg. "<br><br><br>";
-            
-            ?>
+         
             <form method="post" action="register.php">
                <input class="form-control" name="username" placeholder="Username..."><br>
                <input  class="form-control" name="email" type="email" placeholder="Email..."><br>
